@@ -1,0 +1,24 @@
+﻿clave_sector,Actividad economica agregada,COD_SCIAN,COD_SCIAN2,GA_code,LARGO
+1,"Agricultura, Silvicultura, Ganadería y Pesca",11,11,1,"Agricultura, cría y explotación de animales, aprovechamiento forestal, pesca y caza"
+2,Bancario,52,52,3,Servicios financieros y de seguros
+3,Comercio,43-46,43,3,Comercio al por mayor y al por menor
+4,Comunicaciones y Telecomunicaciones,51,51,3,Información en medios masivos
+5,Construcción,23,23,2,Construcción
+6,Educativo,61,61,3,Servicios educativos
+7,Hoteles y Restaurantes,72,72,3,Servicios de alojamiento temporal y de preparación de alimentos y bebidas
+8,"Alimentos, Bebidas y Tabaco",31-33,31,2, Industrias manufactureras
+9,Industria Automotriz,31-33,31,2, Industrias manufactureras
+10,"Petróleo, Minería, Gas y Energía",21,21,2,Minería
+11,Resto Industria,31-33,31,2, Industrias manufactureras
+12,Salud,62,62,3,Servicios de salud y de asistencia social
+13,Servicios Comunales y Sociales,62,62,3,Servicios de salud y de asistencia social
+14,Servicios Financieros (No Bancarios),52,52,3,Servicios financieros y de seguros
+15,Servicios Profesionales y Técnicos,54,54,3,"Servicios profesionales, científicos y técnicos"
+16,Transporte,48-49,48,3,"Transportes, correos y almacenamiento"
+17,"Gobierno, Estados y Municipio",93,93,3,"Actividades legislativas, gubernamentales, de impartición de justicia y de organismos internacionales y extraterritoriales"
+18,Gobierno Federal,93,93,3,"Actividades legislativas, gubernamentales, de impartición de justicia y de organismos internacionales y extraterritoriales"
+19,Organismos Internacionales,93,93,3,"Actividades legislativas, gubernamentales, de impartición de justicia y de organismos internacionales y extraterritoriales"
+20,Industria Textil y de Calzado,31-33,31,2, Industrias manufactureras
+21,Industria Química y Farmacéutica,31-33,31,2, Industrias manufactureras
+22,Industria Materiales de Construcción,31-33,31,2, Industrias manufactureras
+23,Servicios de Esparcimiento y otros Servicios Recreativo,71,71,3,"Servicios de esparcimiento culturales y deportivos, y otros servicios recreativos"

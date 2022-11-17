@@ -1,0 +1,31 @@
+﻿funds_use_cnbv_code,use_description,funds_use_code,funds_use_code2
+181,Cartas de crédito,100,capital_trabajo
+311,Capital de Trabajo,100,capital_trabajo
+313,Adquisición de Activo Fijo: Mobiliario y Equipo,300,inversion
+316,Pago de Pasivos,200,capital_trabajo
+430,Proyectos de infraestructura,400,inversion
+432,Crédito Puente para Construcción de Vivienda,400,inversion
+433,Crédito Puente para Construcción de Inmuebles Comerciales y de Servicios,400,inversion
+434,Adquisición de Activo Fijo: Inmuebles,300,
+436,Investigación y Desarrollo,500,inversion
+439,Tarjeta de crédito empresarial,600,
+440,Línea de crédito para liquidez,100,capital_trabajo
+441,Garantía de operaciones derivadas,700,capital_trabajo
+442,Garantía de operaciones de mercado de dinero,700,capital_trabajo
+,Activo Fijo,300,
+310,Proyectos de Infraestructura,400,
+,Operaciones de Arrendamiento Financiero,700,
+,Operaciones de Factoraje Financiero,700,
+,Operaciones de Arrendamiento Puro,700,
+317,Crédito Fuente de Pago Propia,400,
+,Crédito a Instituciones Financieras,700,
+,Desarrollo Inmobiliario de Vivienda,400,
+316,Consolidación (Pago) de Pasivos,200,
+,Crédito a Estados y Municipios,800,
+,No Aplica,999,
+310,Obras publicas y proyectos de infraestructura,400,
+,Desarrollo Inmobiliario Comercial,300,
+312,Adquisición de Activo Fijo: Propiedades,300,
+316,Pago de pasivos,200,
+310,Obras Públicas,400,
+315,Procampo,800,

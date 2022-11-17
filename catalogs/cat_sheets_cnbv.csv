@@ -1,0 +1,7 @@
+﻿Nombre,Alias,rnm
+Num de Transac en Cajeros Aut,transacciones_atm,Número de Transacciones en Cajeros Automáticos
+Num de Pers Cont por Terceros,pers_terceros,Número de Personal Contratado por Terceros
+Num de Pers Cont por la Inst,pers_institucion,Número de Personal Contratado por la Entidad
+Num de Sucursales,num_sucursales,Número de Sucursales
+Num de Cajeros Automaticos,num_cajeros,Número de Cajeros Automáticos
+Num de Est con TPV,num_est_tpv,Número de Establecimientos con TPV

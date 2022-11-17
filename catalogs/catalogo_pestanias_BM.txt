@@ -1,0 +1,16 @@
+Operatividad TDD/TDC
+- Num de Transac en TPV
+- Num de Contratos con TD
+- Num de Cont que afectan por cel
+- Num de TPV
+
+
+Operatividad sucursales
+- Num de Pers Cont por Terceros
+- Num de Pers Cont por la Inst
+- Num de Transac en Cajeros Aut
+
+Operatividad banco
+- Num de Sucursales
+- Num de Cajeros Automaticos
+- Num de Est con TPV

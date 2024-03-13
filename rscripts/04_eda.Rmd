@@ -1,0 +1,480 @@
+---
+title: "Summary Statistics for Loan Portfolio (Cartera de Credito) Data"
+author: "Jesús López-Pérez"
+date: "18/4/2022"
+output: pdf_document
+urlcolor: blue
+---
+
+```{r setup, echo=FALSE, message=FALSE, cache = FALSE}
+knitr::opts_chunk$set(dev='png')
+
+options(digits = 3)
+
+# set up knitr global chunk options
+knitr::opts_chunk$set(fig.width = 8)
+
+RStudioView <- View
+View <- function(x) {
+  name  <- deparse(substitute(x))
+  if ("data.frame" %in% class(x)) { 
+    RStudioView(x[1:1000,], name)
+  } else { 
+    RStudioView(x) 
+  }
+}
+
+
+```
+
+In this document we present an exploratory data analysis for the data *Información de Cartera de Crédito, Cartera comercial* for Mexican banks downloaded from [CNBV portfolio](https://portafolioinfo.cnbv.gob.mx/Paginas/Reporte.aspx?s=40&t=2&st=3&ti=0&sti=0&n=0&tp=0).
+
+```{r library-imports, echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(stringr)
+library(ggplot2)
+library(zoo)
+library(fpp3)
+library(tibble)
+library(Hmisc)
+library(tidyr)
+library(patchwork)
+library(plm)
+
+```
+
+```{r preparation-and-data-import, echo=FALSE, message=FALSE, include=FALSE, cache=TRUE}
+library(tidyverse)
+library(stringr)
+library(ggplot2)
+library(zoo)
+library(fpp3)
+library(tibble)
+library(Hmisc)
+library(tidyr)
+# rm(list = ls())
+Sys.setlocale("LC_TIME", "C")
+options(scipen=1, digits=3)
+
+# to prevent viewing large datasets
+# https://stackoverflow.com/questions/48792084/view-function-showing-all-columns-makes-r-really-slow
+
+
+path <- "D:/Personal/MTE/Tesis/Propuestas_Temas/credit-markets/Data"
+
+which_db <- "ALL"
+ 
+# catalogs
+read.csv(paste(path, "/cat_ents.csv", sep = ""), encoding = "UTF-8",
+         col.names = c("state_code","state_long", "state_short")) %>% 
+  mutate(state_code = str_pad(state_code, pad = "0", width = 2, side = "left")) ->  cat_ents
+
+cat_ents <- cat_ents %>% 
+  mutate(state_code = ifelse(state_code == 999,99,state_code))
+
+read.csv(paste(path, "/cat_eeffs.csv", sep = ""), encoding = "UTF-8",
+         col.names = c("institution_code", "institution")) %>% 
+  mutate(institution_code = as.character(str_pad(institution_code,
+                                                 pad = "0", width = 6, side = "left"))) -> cat_eeffs
+
+read.csv(paste(path, "/cat_sectores.csv", sep = ""), encoding = "UTF-8",
+         col.names = c("sector_code", "Econ_Act", "scian_code", "scian_code2",
+                       "description")) %>% 
+  mutate(sector_code = as.character(str_pad(sector_code,
+                                            pad = "0", width = 2, side = "left"))) -> cat_sects
+
+read.csv(paste(path, "/cat_destino.csv", sep = ""), encoding = "UTF-8",
+         col.names = c("funds_use_cnbv_code", "use_description","funds_use_code")) -> cat_funds_use
+
+read.csv(paste(path, "/cat_reporte_cnbv.csv", sep = ""), encoding = "UTF-8",
+         col.names = c("cnbv_report_code","report_description",
+                       "large_description")) -> cat_cnbv_report
+
+read.csv(paste(path, "/cat_firm_size.csv", sep = ""), encoding = "UTF-8",
+         col.names = c("firm_size_code", "firm_description")) -> cat_firm_size
+
+read.csv(paste(path, "/cat_currency.csv", sep = ""), encoding = "UTF-8",
+         col.names = c("currency_code", "currency")) -> cat_currency
+
+# read data
+# data_r <- read.csv(paste(path, "/proc/firms_G7_2T_16_4T_21.csv", sep = ""),
+#                    fileEncoding = "UTF-8")
+
+banks <- c("Citibanamex","BBVA México","Santander","HSBC","Inbursa",
+           "Scotiabank","Banorte")
+
+data_r_all <- read.csv(paste(path, "/proc/firms_",which_db,"_2T_16_4T_21.csv", sep = ""),
+                   fileEncoding = "UTF-8")
+data_r_all %>% 
+  mutate(institution_code = str_pad(institution_code,width = 6, pad = "0", side = "left"),
+         state_code = str_pad(state_code,width = 2, pad = "0", side = "left")) -> data_r_all
+
+months <- unique(data_r_all$period)
+all_banks  <- unique(data_r_all$institution)
+
+```
+
+## Summary of data
+
+The raw data is monthly from **`r months[1]`** to **`r months[length(months)]`** (`r length(months)`) periods. For every month, we have loans data at firm level (one firm can have one or more register (RFC), and each register can have one or more credits).
+
+## Description of variables:
+
+For each period `t`
+
+-   Firm information
+    -   `institution_code`: institution `b` that granted loan `r length(all_banks)` banks.
+    -   `cnbv_report_code`: `r length(unique(data_r_all$cnbv_report_code))` report types
+    -   `scian_code`: `r length(unique(data_r_all$scian_code))` sectors.
+    -   `GA_code`: `r length(unique(data_r_all$GA_code))` Grand Economic Activities (primary, secondary and tertiary sector).
+    -   `state_code`: `r length(unique(data_r_all$state_code))-1` states + Foreign.
+    -   `funds_use_code`: `r length(unique(data_r_all$funds_use_code))` funds use.
+    -   `currency_code`: `r length(unique(data_r_all$currency_code))`, Moneda Nacional, Moneda Extranjera, UDIS .
+    -   `firm_size_code`, 3 sizes: S - Small, L - Large, T - Trustee.
+-   Loan information
+    -   `number_of_loans`: Number of loans granted to firm `i`
+    -   `number_of_debtors_by_rfc`: Number of debtors within a registered firm `i` (RFC).
+    -   `loan_disposition_month`: Loan amount required in month `t`.
+    -   `total_portfolio`: Total amount of loans (cummulative).
+    -   `current_portfolio`: Total amount of loans with no arrears (cummulative).
+    -   `past_due_portfolio`: Total amount of loans with unpaid payments (cummulative).
+    -   `interest_rate_disposition`: Calculated interest rate of the amount required in month `t` (int_rate_x\_loan_amount / loan_disposition_month).
+    -   `interest_rate_all`: Calculated interest rate for all amount (int_rate_x\_total_resp / total_portfolio).
+    -   `term_disposition`: Calculated loan term of the amount required in month `t` (term_x\_loan_amount / loan_disposition_month).
+    -   `term_all`: Calculated loan term for all amount (term_x\_total_resp / total_portfolio).
+    -   `average_loan`: Calculated average loan amount (total_portfolio / number_of_loans)
+    -   `past_due_pct`: Calculated amount of loans with unpaid payments (past_due_portfolio / total_portfolio).
+
+The database contains `r nrow(data_r_all`` rows,
+
+The data does not includes a firm id number, thus I generated a `firm_id` by concatenating:
+
+-   institution_code,# 6 digits
+-   cnbv_report_code, \# 3 digits
+-   scian_code2,# 2 digits
+-   state_code,# 2 digits
+-   funds_use_code,# 3 digits
+-   currency_code, \# 2 letters
+-   firm_size_code, \# 1 letter
+
+example: `r data_r_all$firm_id[1]` stand for firm with bank `040002` from report `R443` Empresas menores 14mdu, sector `11` Farming, state `01` Aguascalientes, `100` funds use Cartas de crédito, `MN` in local currency and `L` large sized firm.
+
+The unique `firm_id`'s are `r  data_r_all %>%  summarise(N_firms_aprox = length(unique(firm_id)))`, however there is no guarantee that these id's belong to unique firms, there are firms with the same code. Thus, we cannot use the data at a firm level.
+
+```{r loan-id-analysis,warning=FALSE, message=FALSE, comment = "", echo =FALSE}
+ 
+data_r_all %>% group_by(firm_id) %>% 
+  summarise(N = n()) %>% 
+  mutate(N_rep = case_when((N > 0 & N <= 10) ~ "1 to 10 obs",
+                          (N >10 & N <= 20) ~ "11 to 20 obs",
+                          (N >20 & N <= 30) ~ "21 to 30 obs",
+                          (N >30 & N <= 40) ~ "31 to 40 obs",
+                          (N >40 & N <= 50) ~ "41 to 50 obs",
+                          (N >50 & N <= 60) ~ "51 to 60 obs",
+                          (N >60 & N <= 68) ~ "61 to 68 obs",
+                           N > 68 ~ "More than 68 obs")) %>% 
+  mutate(N_rep = fct_relevel(N_rep,"1 to 10 obs",
+                             "11 to 20 obs","21 to 30 obs",
+                             "31 to 40 obs","41 to 50 obs",
+                             "51 to 60 obs","61 to 68 obs",
+                             "More than 68 obs") )%>% 
+  group_by(N_rep) %>% 
+  summarise(count_id = sum(N)) -> table_id_count #%>% pull(count_id) %>% sum()
+
+knitr::kable(table_id_count,digits = 2, format.args = list(big.mark = ",",   scientific = FALSE)) 
+
+table_id_count %>% 
+  ggplot(aes(x = N_rep, y = count_id)) + 
+  geom_bar(stat = "identity") ->g1
+
+
+```
+
+## Data cleaning
+
+We remove loans with zero interest rate that represent
+
+```{r data-cleaning, comment="", message=FALSE, echo = FALSE, warning=FALSE}
+
+nrow(data_r_all)
+
+# we remove:
+data_r_all %>% filter(interest_rate_disposition <= 0) %>% nrow # 17710
+data_r_all %>% filter(interest_rate_all <= 0) %>% nrow # 14949
+data_r_all %>% filter(term_disposition < 0) %>% nrow # 36
+data_r_all %>% filter(term_all < 0) %>% nrow # 7663
+data_r_all %>% filter(term_all > 360) %>% nrow # 19035
+
+# temp <- ifelse(data_r_all$interest_rate_disposition <0,"Yes","No")
+# length(which(temp == "Yes"))
+
+# 
+clean <- function(x, include = FALSE){
+    x[is.na(x)] <- include
+    x
+}
+
+# # Original output
+# with(data_r_all, data_r_all[interest_rate_disposition <0 ,])
+# # Clean it up and remove NAs
+# with(data_r_all, data_r_all[clean(interest_rate_disposition <0),])
+# # Clean it up but include NAs
+
+
+# data_r_all$ID = cumsum(!is.na(data_r_all$interest_rate_disposition))
+# data_r_all$ID <- ifelse(is.na(data_r_all$interest_rate_disposition),
+#                       data_r_all$interest_rate_disposition,data_r_all$ID)
+# 
+
+# cleaning interest rates
+N <- nrow(data_r_all)
+n_orig <- nrow(data_r_all)
+data_r_all$log_int_rate_d <- log(data_r_all$interest_rate_disposition)
+data_r_all$log_int_rate_a <- log(data_r_all$interest_rate_all)
+data_r_all <- with(data_r_all, data_r_all[clean(log_int_rate_d >=0, include = TRUE),])
+data_r_all <- with(data_r_all, data_r_all[clean(log_int_rate_a >=0, include = TRUE),])
+data_r_all <- with(data_r_all, data_r_all[clean( !is.infinite(interest_rate_all), include = TRUE),])
+data_r_all <- with(data_r_all, data_r_all[clean( !is.infinite(interest_rate_disposition), include = TRUE),])
+n_clean1 <- nrow(data_r_all)
+n_orig - n_clean1; 100* (n_orig - n_clean1) / n_orig 
+n_removed_int <- n_orig - n_clean1
+
+# cleaning term
+data_r_all <- with(data_r_all, data_r_all[clean(term_all >=0, include = TRUE),])
+data_r_all <- with(data_r_all, data_r_all[clean(term_disposition >=0, include = TRUE),])
+data_r_all <- with(data_r_all, data_r_all[clean( !is.infinite(term_all), include = TRUE),])
+data_r_all <- with(data_r_all, data_r_all[clean( !(term_all > 360), include = TRUE),]) 
+data_r_all <- with(data_r_all, data_r_all[clean( !(term_disposition > 360), include = TRUE),])
+n_clean2 <- nrow(data_r_all)
+n_orig  - (n_clean2 ); 100* (n_orig - (n_clean2)) / n_orig 
+n_clean2
+
+
+nrow(data_r_all)
+
+write.csv(data_r_all, paste(path, "/proc/firms_ALL_2T_16_4T_21-clean.csv", 
+                            sep = ""),row.names = FALSE,
+          fileEncoding = "UTF-8")
+
+```
+
+## Summary statistics for numerical variables
+
+```{r summary, echo=FALSE, comment="", message=FALSE, warning=FALSE}
+library(tidyr)
+library(tidyverse)
+
+
+data_r_all %>% select(number_of_loans, 
+                      number_of_debtors_by_rfc, 
+                      loan_disposition_month,
+                      interest_rate_disposition,
+                      term_disposition) %>% 
+  apply(2,fivenum) -> summary_1
+
+summary_1 <- t((summary_1))
+colnames(summary_1) <- c("min", "p25","median","p75","max")
+ knitr::kable(summary_1,digits = 2, format.args = list(big.mark = ",",   scientific = FALSE))
+                      
+data_r_all %>% select(total_portfolio, 
+                      current_portfolio,
+                      average_loan,
+                      past_due_portfolio,
+                      past_due_pct,
+                      interest_rate_all,
+                      term_all) %>% 
+apply(2,fivenum) -> summary_2
+
+summary_2 <- t((summary_2))
+colnames(summary_2) <- c("min", "p25","median","p75","max")
+
+knitr::kable(summary_2,digits = 2, format.args = list(big.mark = ",",   scientific = FALSE))
+
+
+```
+
+Summary all time
+
+```{r summary-all-time, comment="", message=FALSE, echo = FALSE, warning=FALSE}
+  
+data_r_all %>% 
+  mutate(
+  institution = ifelse(institution %in% banks, institution, "Other")) %>%  
+  group_by(institution) %>% 
+  summarise(N = n(),
+            `Total Portfolio` = sum(total_portfolio )/1000000,
+            `WA interest_rate` = sum(interest_rate_all * total_portfolio, na.rm = T) / sum(total_portfolio),
+            `WA term` = sum(term_all * total_portfolio, na.rm = T) / sum(total_portfolio),
+            `WA past_due_pct` = sum(past_due_pct*total_portfolio, na.rm = TRUE) / sum(total_portfolio)) %>% 
+  mutate(`Total Portfolio (%)` = 100 * `Total Portfolio` / sum(`Total Portfolio`)) %>%  
+  arrange(desc(`Total Portfolio (%)`)) -> table_1 
+
+knitr::kable(table_1,digits = 2, format.args = list(big.mark = ",",   scientific = FALSE))
+
+
+```
+
+## Bivariate analysis
+
+Loan amount by size of firm
+
+```{r analysis-by-firm-size,  message=FALSE, echo = FALSE, warning=FALSE}
+
+data_r_all %>% 
+  mutate(firm_size_code = fct_relevel(firm_size_code,
+                                      "S","L","T")) %>%
+  ggplot(aes(x = log(total_portfolio), 
+             color = firm_size_code) ) +
+  geom_density() -> g1
+data_r_all %>% 
+  mutate(firm_size_code = fct_relevel(firm_size_code,
+                                      "S","L","T")) %>% 
+  ggplot(aes(x = log(total_portfolio),
+                          y = firm_size_code)) + 
+  geom_boxplot() + 
+  coord_flip() -> g2
+g1 + g2
+
+
+
+```
+
+\newpage
+
+Loan amount by institution
+
+```{r analysis-by-institution,  message=FALSE, echo = FALSE, warning=FALSE, fig.height = 8, fig.width = 13, fig.align = "center"}
+data_r_all %>% 
+  ggplot(aes(x = log(total_portfolio), 
+             color = institution) ) +
+  geom_density()  + 
+  theme(legend.position = "bottom") 
+
+data_r_all %>% 
+  ggplot(aes(x = log(total_portfolio),
+                          y = institution)) + 
+  geom_boxplot() + 
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+
+
+
+
+```
+
+\newpage
+
+Loan amount by SCIAN code
+
+```{r analysis-by-sector,  message=FALSE, echo = FALSE, warning=FALSE, fig.height = 8, fig.width = 13, fig.align = "center"}
+data_r_all %>% 
+  ggplot(aes(x = log(total_portfolio), 
+             color = scian_code) ) +
+  geom_density()  + 
+  theme(legend.position = "bottom")
+
+data_r_all %>% 
+  ggplot(aes(x = log(total_portfolio),
+                          y = scian_code)) + 
+  geom_boxplot() 
+
+```
+
+\newpage
+
+Analysis by destination of funds
+
+```{r analysis-by-fund-use,  message=FALSE, echo = FALSE, warning=FALSE, fig.height = 8, fig.width = 13, fig.align = "center"}
+data_r_all %>% 
+  ggplot(aes(x = log(total_portfolio), 
+             color = factor(funds_use_code)) ) +
+  geom_density()  + 
+  theme(legend.position = "bottom")
+
+data_r_all %>% 
+  ggplot(aes(x = log(total_portfolio),
+                          y = factor(funds_use_code)) ) + 
+  geom_boxplot() 
+```
+
+## Share of banks across time
+
+```{r share-of-banks, comment="", message=FALSE, echo = FALSE, warning=FALSE}
+
+# function to calculate share for institution  
+calc_share_f <- function(x){
+  # x <- data_r_all
+  x %>% group_by(institution) %>% 
+    summarise("Number of loans" = sum(number_of_loans),
+              "Total Portfolio" = sum(total_portfolio)) %>% 
+    mutate(`Total Portfolio` = `Total Portfolio`/1000000000) %>% 
+    mutate("Number of loans (%)" = 100*`Number of loans` / sum(`Number of loans`),
+           "Total Portfolio (%)" = 100*`Total Portfolio` / sum(`Total Portfolio`)) %>% 
+    arrange(desc(`Number of loans (%)`)) %>% 
+    select(institution, `Number of loans`,
+           `Total Portfolio`, `Number of loans (%)`, `Total Portfolio (%)`)
+  }
+
+# # check 
+# data_r_all %>% filter(period == 201604) %>% 
+#  calc_share_f()
+
+# iterate over periods for G7 only 
+data_r_all %>% mutate(
+  institution = case_when(institution %in% banks ~ "G7",
+                          !(institution %in% banks) ~ "other")) %>% 
+  group_by(period) %>% nest() %>% 
+  mutate(shares = map(.x = data, .f = calc_share_f)) %>% 
+  unnest(shares) -> shares_g7_df
+  
+# iterate over periods for all banks 
+data_r_all %>% mutate(
+  institution = ifelse(institution %in% banks, institution, "Other")) %>% 
+  group_by(period) %>% nest() %>% 
+  mutate(shares = map(.x = data, .f = calc_share_f)) %>% 
+  unnest(shares) -> shares_banks_df
+
+# clean memory
+#rm(data_r_all, data_r_all_nested)
+
+# reshape for ggplot
+reshape_shares_as_ts_f <- function(x){
+  x %>% 
+  select(period, institution,`Total Portfolio (%)`) %>% 
+  pivot_wider(names_from = institution, 
+              values_from = `Total Portfolio (%)`) %>% 
+  select(-period) %>% 
+  ts(start = c(2016,4),end = c(2021,11), frequency = 12) %>% 
+  as_tsibble(index = "index", 
+             pivot_longer = TRUE) %>% 
+  filter(key != "period")
+}
+
+shares_g7_ts <- reshape_shares_as_ts_f(shares_g7_df)
+shares_banks_ts <- reshape_shares_as_ts_f(shares_banks_df)
+
+plot_shares_f <- function(data, faceting = FALSE){
+  if(faceting == FALSE){
+    data %>% 
+      ggplot(aes(x = index, y = value, group = key, color = key)) +
+      geom_line() + 
+      ggtitle("G7 Banks shares", 
+              subtitle = "Percent of Amount Outstanding") +
+      ylab("Percentage (%)") + 
+      xlab("Time")
+  }else{
+    data %>% 
+      ggplot(aes(x = index, y = value, group = key, color = key)) +
+      geom_line() + 
+      facet_wrap( ~ key) + 
+      ggtitle("G7 Banks shares", 
+              subtitle = "Percent of Amount Outstanding") +
+      ylab("Percentage (%)") + 
+      xlab("Time")
+  }
+}
+
+shares_g7_ts %>% plot_shares_f(faceting = FALSE)
+shares_banks_ts %>% plot_shares_f(faceting = TRUE)
+
+
+```

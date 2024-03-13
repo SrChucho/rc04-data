@@ -13,7 +13,7 @@ filter <- dplyr::filter
 melt <- reshape2::melt
 
 # modify this parameters to change working variable
-alias <- "transacciones_atm"
+alias <- "num_est"
 
 dir_cnbv <- paste("D:/Personal/MTE/Tesis/Propuestas_Temas/",
                   "credit-markets/Data", sep = "")

@@ -1,0 +1,38 @@
+{
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+\begin{tabular}{l*{2}{c}}
+\hline\hline
+                &\multicolumn{1}{c}{(1)}&\multicolumn{1}{c}{(2)}\\
+                &\multicolumn{1}{c}{Log Loan Amount}&\multicolumn{1}{c}{est2}\\
+\hline
+Interest rate   &   -0.224\sym{***}&   -0.224\sym{***}\\
+                & (0.0172)         & (0.0172)         \\
+Term            &   -0.275\sym{***}&   -0.275\sym{***}\\
+                & (0.0745)         & (0.0745)         \\
+Inflation rate  &   0.0997\sym{***}&   0.0997\sym{***}\\
+                & (0.0111)         & (0.0111)         \\
+Citibanamex     &  -0.0504         &  -0.0504         \\
+                & (0.0943)         & (0.0943)         \\
+Santander       &   -0.563\sym{***}&   -0.563\sym{***}\\
+                &  (0.169)         &  (0.169)         \\
+HSBC            &   -1.238\sym{***}&   -1.238\sym{***}\\
+                &  (0.165)         &  (0.165)         \\
+Inbursa         &    0.444\sym{*}  &    0.444\sym{*}  \\
+                &  (0.231)         &  (0.231)         \\
+Scotiabank      &   -0.615\sym{***}&   -0.615\sym{***}\\
+                &  (0.155)         &  (0.155)         \\
+Banorte         &   -0.354\sym{**} &   -0.354\sym{**} \\
+                &  (0.160)         &  (0.160)         \\
+Sector effects  &      Yes         &      Yes         \\
+Year effects    &      Yes         &      Yes         \\
+\hline
+Observations    &     5749         &     5749         \\
+Adjusted \(R^{2}\)&    0.488         &    0.488         \\
+\hline          &                  &                  \\
+\hspace{5mm} Price elasticity&   -2.283         &                  \\
+\hspace{5mm} Std. Err.&    0.175         &                  \\
+\hspace{5mm} Term elasticity&                  &   -0.752         \\
+\hspace{5mm} Std. Err.&                  &    0.204         \\
+\hline\hline
+\end{tabular}
+}

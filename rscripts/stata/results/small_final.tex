@@ -1,0 +1,40 @@
+{
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+\begin{tabular}{l*{2}{c}}
+\hline\hline
+                &\multicolumn{1}{c}{(1)}&\multicolumn{1}{c}{(2)}\\
+                &\multicolumn{1}{c}{Log Loan Amount}&\multicolumn{1}{c}{iv_industry_year_log}\\
+\hline
+log(Interest rate)&   -1.890\sym{***}&   -1.435\sym{***}\\
+                &  (0.165)         &  (0.229)         \\
+log(Term)       &    0.241\sym{***}&    0.139         \\
+                & (0.0715)         & (0.0916)         \\
+Inflation rate  &   0.0679\sym{***}&   0.0530\sym{***}\\
+                & (0.0174)         & (0.0157)         \\
+Citibanamex     &    0.254\sym{**} &    0.225\sym{**} \\
+                &  (0.104)         &  (0.101)         \\
+Santander       &   -0.776\sym{***}&   -0.786\sym{***}\\
+                &  (0.182)         &  (0.186)         \\
+HSBC            &   -1.027\sym{***}&   -1.070\sym{***}\\
+                &  (0.118)         &  (0.109)         \\
+Inbursa         &   -0.296         &   -0.223         \\
+                &  (0.220)         &  (0.234)         \\
+Scotiabank      &   -0.173\sym{*}  &   -0.231\sym{**} \\
+                & (0.0939)         & (0.0949)         \\
+Banorte         &   0.0493         &  0.00354         \\
+                &  (0.146)         &  (0.144)         \\
+Industry effects &      Yes         &      Yes         \\
+Year effects    &      Yes         &      Yes         \\
+Industry-Year effects &      Yes         &      Yes         \\
+\hline
+Observations    &     5482         &     5482         \\
+R-squared       &    0.394         &    0.384         \\
+elas_i          &   -23.88         &                  \\
+elas_i_SE       &    2.079         &                  \\
+elas_t          &    2.754         &                  \\
+elas_t_SE       &    0.816         &                  \\
+F first stage   &                  &                  \\
+F first stage   &                  &233.4784194435709         \\
+\hline\hline
+\end{tabular}
+}

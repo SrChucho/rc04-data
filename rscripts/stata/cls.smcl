@@ -1,0 +1,227 @@
+{smcl}
+{com}{sf}{ul off}{txt}{.-}
+      name:  {res}<unnamed>
+       {txt}log:  {res}D:\Personal\MTE\Tesis\Propuestas_Temas\credit-markets\scripts\stata_files\cls.smcl
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res} 7 Jul 2023, 00:04:03
+
+{com}. cls
+
+. do "C:\Users\JESUS~1.LOP\AppData\Local\Temp\STD6c80_000000.tmp"
+{txt}
+{com}. * NO IV
+. quietly xtivreg2 log_mean_disposition wa_interest_rate_d wa_term_d inflation citibanamex santander hsbc inbursa scotiabank banorte a2016 a2017 a2018 a2019 a2020 [aweight = n_sect], cluster(scian_code) fe robust
+{err}Warning: estimated covariance matrix of moment conditions not of full rank.
+         overidentification statistic not reported, and standard errors and
+         model tests should be interpreted with caution.
+Possible causes:
+         number of clusters insufficient to calculate robust covariance matrix
+         singleton dummy variable (dummy with one 1 and N-1 0s or vice versa)
+{help ivreg2##partial:partial} option may address problem.
+{txt}
+{com}. estimates store no_iv
+{txt}
+{com}. * elasticity between disposition and interest rate
+. estimates restore no_iv
+{txt}(results {stata estimates replay no_iv:no_iv} are active now)
+
+{com}. nlcom (_b[wa_interest_rate_d] * (mymean_i) ), post 
+
+       {txt}_nl_1: {res}_b[wa_interest_rate_d] * (mymean_i)
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}log_mean_d~n{col 14}{c |} Coefficient{col 26}  Std. err.{col 38}      z{col 46}   P>|z|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}_nl_1 {c |}{col 14}{res}{space 2}-2.957862{col 26}{space 2} .2320935{col 37}{space 1}  -12.74{col 46}{space 3}0.000{col 54}{space 4}-3.412757{col 67}{space 3}-2.502967
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. di mymean_i
+{res}12.555538
+{txt}
+{com}. * elasticity between disposition and term
+. est restore no_iv
+{txt}(results {stata estimates replay no_iv:no_iv} are active now)
+
+{com}. nlcom (_b[wa_term_d] * (mymean_term) ), post 
+
+       {txt}_nl_1: {res}_b[wa_term_d] * (mymean_term)
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}log_mean_d~n{col 14}{c |} Coefficient{col 26}  Std. err.{col 38}      z{col 46}   P>|z|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}_nl_1 {c |}{col 14}{res}{space 2} -.056394{col 26}{space 2} .0406044{col 37}{space 1}   -1.39{col 46}{space 3}0.165{col 54}{space 4}-.1359771{col 67}{space 3} .0231891
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. di mymean_term
+{res}3.0078954
+{txt}
+{com}.                 
+.                 
+. * NO IV + industry_year
+. quietly xtivreg2 log_mean_disposition wa_interest_rate_d wa_term_d inflation citibanamex santander hsbc inbursa scotiabank banorte a2016 a2017 a2018 a2019 a2020 x11_2016-x93_2021 [aweight = n_sect], cluster(scian_code) fe robust
+{err}Warning: estimated covariance matrix of moment conditions not of full rank.
+         overidentification statistic not reported, and standard errors and
+         model tests should be interpreted with caution.
+Possible causes:
+         number of clusters insufficient to calculate robust covariance matrix
+         singleton dummy variable (dummy with one 1 and N-1 0s or vice versa)
+{help ivreg2##partial:partial} option may address problem.
+{txt}
+{com}. estimates store no_iv_industry_year
+{txt}
+{com}. * elasticity between disposition and interest rate
+. estimates restore no_iv_industry_year
+{txt}(results {stata estimates replay no_iv_industry_year:no_iv_industry_year} are active now)
+
+{com}. nlcom (_b[wa_interest_rate_d] * (mymean_i) ), post 
+
+       {txt}_nl_1: {res}_b[wa_interest_rate_d] * (mymean_i)
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}log_mean_d~n{col 14}{c |} Coefficient{col 26}  Std. err.{col 38}      z{col 46}   P>|z|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}_nl_1 {c |}{col 14}{res}{space 2}-2.987522{col 26}{space 2}  .232412{col 37}{space 1}  -12.85{col 46}{space 3}0.000{col 54}{space 4}-3.443041{col 67}{space 3}-2.532002
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. di mymean_i
+{res}12.555538
+{txt}
+{com}. * elasticity between disposition and term
+. est restore no_iv_industry_year
+{txt}(results {stata estimates replay no_iv_industry_year:no_iv_industry_year} are active now)
+
+{com}. nlcom (_b[wa_term_d] * (mymean_term) ), post 
+
+       {txt}_nl_1: {res}_b[wa_term_d] * (mymean_term)
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}log_mean_d~n{col 14}{c |} Coefficient{col 26}  Std. err.{col 38}      z{col 46}   P>|z|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}_nl_1 {c |}{col 14}{res}{space 2}-.0565599{col 26}{space 2} .0392484{col 37}{space 1}   -1.44{col 46}{space 3}0.150{col 54}{space 4}-.1334853{col 67}{space 3} .0203655
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. di mymean_term
+{res}3.0078954
+{txt}
+{com}. 
+. 
+. * IV 
+. quietly xtivreg2 log_mean_disposition wa_term_d inflation citibanamex santander hsbc inbursa scotiabank banorte a2016 a2017 a2018 a2019 a2020 (wa_interest_rate_d = i_other_sector) [aweight = n_sect], cluster(scian_code) fe robust first
+{err}Warning: estimated covariance matrix of moment conditions not of full rank.
+         overidentification statistic not reported, and standard errors and
+         model tests should be interpreted with caution.
+Possible causes:
+         number of clusters insufficient to calculate robust covariance matrix
+         singleton dummy variable (dummy with one 1 and N-1 0s or vice versa)
+{help ivreg2##partial:partial} option may address problem.
+{txt}
+{com}. estimates store iv_model
+{txt}
+{com}. * elasticity between disposition and interest rate
+. estimates restore iv_model
+{txt}(results {stata estimates replay iv_model:iv_model} are active now)
+
+{com}. nlcom (_b[wa_interest_rate_d] * (mymean_i) ), post 
+
+       {txt}_nl_1: {res}_b[wa_interest_rate_d] * (mymean_i)
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}log_mean_d~n{col 14}{c |} Coefficient{col 26}  Std. err.{col 38}      z{col 46}   P>|z|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}_nl_1 {c |}{col 14}{res}{space 2}-.6939847{col 26}{space 2} .5785445{col 37}{space 1}   -1.20{col 46}{space 3}0.230{col 54}{space 4}-1.827911{col 67}{space 3} .4399417
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. di mymean_i
+{res}12.555538
+{txt}
+{com}. * elasticity between disposition and term
+. est restore iv_model
+{txt}(results {stata estimates replay iv_model:iv_model} are active now)
+
+{com}. nlcom (_b[wa_term_d] * (mymean_term) ), post 
+
+       {txt}_nl_1: {res}_b[wa_term_d] * (mymean_term)
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}log_mean_d~n{col 14}{c |} Coefficient{col 26}  Std. err.{col 38}      z{col 46}   P>|z|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}_nl_1 {c |}{col 14}{res}{space 2}-.2560596{col 26}{space 2} .0498789{col 37}{space 1}   -5.13{col 46}{space 3}0.000{col 54}{space 4}-.3538205{col 67}{space 3}-.1582988
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. di mymean_term
+{res}3.0078954
+{txt}
+{com}. 
+. 
+. * IV + industry_year
+. quietly xtivreg2 log_mean_disposition wa_term_d inflation citibanamex santander hsbc inbursa scotiabank banorte a2016 a2017 a2018 a2019 a2020 x11_2016-x93_2021 (wa_interest_rate_d = i_other_sector) [aweight = n_sect], cluster(scian_code) fe robust first
+{err}Warning: estimated covariance matrix of moment conditions not of full rank.
+         overidentification statistic not reported, and standard errors and
+         model tests should be interpreted with caution.
+Possible causes:
+         number of clusters insufficient to calculate robust covariance matrix
+         singleton dummy variable (dummy with one 1 and N-1 0s or vice versa)
+{help ivreg2##partial:partial} option may address problem.
+{txt}
+{com}. estimates store iv_industry_year
+{txt}
+{com}. * elasticity between disposition and interest rate
+. estimates restore iv_industry_year
+{txt}(results {stata estimates replay iv_industry_year:iv_industry_year} are active now)
+
+{com}. nlcom (_b[wa_interest_rate_d] * (mymean_i) ), post 
+
+       {txt}_nl_1: {res}_b[wa_interest_rate_d] * (mymean_i)
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}log_mean_d~n{col 14}{c |} Coefficient{col 26}  Std. err.{col 38}      z{col 46}   P>|z|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}_nl_1 {c |}{col 14}{res}{space 2}-.5795381{col 26}{space 2} .5555685{col 37}{space 1}   -1.04{col 46}{space 3}0.297{col 54}{space 4}-1.668432{col 67}{space 3} .5093562
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. di mymean_i
+{res}12.555538
+{txt}
+{com}. * elasticity between disposition and term
+. est restore iv_industry_year
+{txt}(results {stata estimates replay iv_industry_year:iv_industry_year} are active now)
+
+{com}. nlcom (_b[wa_term_d] * (mymean_term) ), post 
+
+       {txt}_nl_1: {res}_b[wa_term_d] * (mymean_term)
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}log_mean_d~n{col 14}{c |} Coefficient{col 26}  Std. err.{col 38}      z{col 46}   P>|z|{col 54}     [95% con{col 67}f. interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 7}_nl_1 {c |}{col 14}{res}{space 2}-.2643672{col 26}{space 2} .0537473{col 37}{space 1}   -4.92{col 46}{space 3}0.000{col 54}{space 4}-.3697099{col 67}{space 3}-.1590245
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. di mymean_term
+{res}3.0078954
+{txt}
+{com}. 
+. 
+. esttab no_iv no_iv_industry_year iv_model iv_industry_year using"$Path/scripts/stata_files/results/all.tex", replace indicate("Industry effects = a2016" "Year effects = a2018" "Industry-Year effects = a2019") nonotes substitute(\_ _) nogaps nogaps compress b(a3) se(a3) ar2(a3) star(* 0.10 ** 0.05 *** 0.01) eqlabel(none) nodep label keep(wa_interest_rate_d wa_term_d inflation citibanamex santander hsbc inbursa scotiabank banorte) coeflabel(wa_interest_rate_d "Interest rate" wa_term_d "Term" inflation "Inflation rate" citibanamex "Citibanamex" santander "Santander" hsbc "HSBC" inbursa "Inbursa" scotiabank "Scotiabank" banorte "Banorte") mtitle("Log Loan Amount")
+{res}{txt}(output written to {browse  `"D:/Personal/MTE/Tesis/Propuestas_Temas/credit-markets/scripts/stata_files/results/all.tex"'})
+
+{com}. 
+{txt}end of do-file
+
+{com}. cls
+
+. do "C:\Users\JESUS~1.LOP\AppData\Local\Temp\STD6c80_000000.tmp"
+{txt}
+{com}. *MTE disertation
+. * Jesus López-Pérez
+. 
+. * Default prediction
+. clear
+{txt}
+{com}. 
+. * Declare and setup working directory
+. global Path "D:/Personal/MTE/Tesis/Propuestas_Temas/credit-markets"
+{txt}
+{com}. 
+. capture log close
+{smcl}
+{com}{sf}{ul off}

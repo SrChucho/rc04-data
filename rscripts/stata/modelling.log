@@ -1,0 +1,212 @@
+------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  D:/Personal/MTE/Tesis/Propuestas_Temas/credit-markets//scripts/stata_files/modelling.log
+  log type:  text
+ opened on:  25 Jul 2022, 12:18:18
+
+. 
+. *----------------- (1) Creating master data set -------------------------------*
+. * Importing data
+. import delimited "$Path/Data/proc/panel_firms_G7_2T_16_4T_21.csv"
+(encoding automatically selected: ISO-8859-1)
+(45 vars, 8,851 obs)
+
+. 
+. br
+
+. 
+. * recode variables
+. gen inst_code = string(institution_code,"%06.0f")
+
+. gen sect_code = string(sector_code,"%02.0f")
+
+. 
+. replace sum_disposition = log1p(sum_disposition)
+(8,851 real changes made)
+
+. replace wa_interest_rate_d = log1p(wa_interest_rate_d)
+(8,851 real changes made)
+
+. replace wa_term_d = log1p(wa_term_d)
+(8,221 real changes made)
+
+. replace wa_atm = log1p(wa_atm)
+(8,766 real changes made)
+
+. replace wa_est_pos = log1p(wa_est_pos)
+(8,565 real changes made)
+
+. replace wa_branches = log1p(wa_branches)
+(8,766 real changes made)
+
+. replace wa_transactions_atm = log1p(wa_transactions_atm)
+(8,755 real changes made)
+
+. replace wa_total_staff = log1p(wa_total_staff)
+(8,746 real changes made)
+
+. 
+. 
+. *setup panel
+. encode inst_code,gen(inst_code1)
+
+. drop inst_code
+
+. rename inst_code1 inst_code
+
+. 
+. encode sect_code,gen(sect_code1)
+
+. drop sect_code
+
+. rename sect_code1 sect_code
+
+. 
+. encode period,gen(period1)
+
+. drop period
+
+. rename period1 period
+
+. 
+. egen panel_var = group(inst_code sect_code)
+
+. xtset panel_var period
+
+Panel variable: panel_var (unbalanced)
+ Time variable: period, 1 to 68, but with gaps
+         Delta: 1 unit
+
+. 
+. * estimate IV models
+. xtreg sum_disposition wa_interest_rate_d wa_term_d noconstant, fe
+variable noconstant not found
+r(111);
+
+end of do-file
+
+r(111);
+
+. do "C:\Users\JESUS~1.LOP\AppData\Local\Temp\STDbec_000000.tmp"
+
+. xtreg sum_disposition wa_interest_rate_d wa_term_d noconstant, fe vce(robust)
+variable noconstant not found
+r(111);
+
+end of do-file
+
+r(111);
+
+. do "C:\Users\JESUS~1.LOP\AppData\Local\Temp\STDbec_000000.tmp"
+
+. xtreg sum_disposition wa_interest_rate_d wa_term_d, fe vce(robust)
+
+Fixed-effects (within) regression               Number of obs     =      8,851
+Group variable: panel_var                       Number of groups  =        149
+
+R-squared:                                      Obs per group:
+     Within  = 0.1720                                         min =          1
+     Between = 0.5071                                         avg =       59.4
+     Overall = 0.3600                                         max =         68
+
+                                                F(2,148)          =      57.18
+corr(u_i, Xb) = 0.4340                          Prob > F          =     0.0000
+
+                                  (Std. err. adjusted for 149 clusters in panel_var)
+------------------------------------------------------------------------------------
+                   |               Robust
+   sum_disposition | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------------+----------------------------------------------------------------
+wa_interest_rate_d |    -2.0426   .2102341    -9.72   0.000    -2.458048   -1.627152
+         wa_term_d |   .0423258   .0772317     0.55   0.584    -.1102936    .1949452
+             _cons |   24.17492   .4418203    54.72   0.000     23.30183    25.04802
+-------------------+----------------------------------------------------------------
+           sigma_u |  2.6817558
+           sigma_e |  1.1283441
+               rho |  .84959666   (fraction of variance due to u_i)
+------------------------------------------------------------------------------------
+
+. 
+end of do-file
+
+. do "C:\Users\JESUS~1.LOP\AppData\Local\Temp\STDbec_000000.tmp"
+
+. estimates store fixed
+
+. 
+end of do-file
+
+. _est_fixed
+command _est_fixed is unrecognized
+r(199);
+
+. di _est_fixed
+1
+
+. do "C:\Users\JESUS~1.LOP\AppData\Local\Temp\STDbec_000000.tmp"
+
+. estimates table fixed
+
+---------------------------
+    Variable |   fixed     
+-------------+-------------
+wa_interes~d | -2.0425998  
+   wa_term_d |   .0423258  
+       _cons |  24.174925  
+---------------------------
+
+. 
+end of do-file
+
+. do "C:\Users\JESUS~1.LOP\AppData\Local\Temp\STDbec_000000.tmp"
+
+. xtreg sum_disposition wa_interest_rate_d wa_term_d fe vce(robust)
+variable fe not found
+r(111);
+
+end of do-file
+
+r(111);
+
+. do "C:\Users\JESUS~1.LOP\AppData\Local\Temp\STDbec_000000.tmp"
+
+. xtreg sum_disposition wa_interest_rate_d wa_term_d, fe vce(robust)
+
+Fixed-effects (within) regression               Number of obs     =      8,851
+Group variable: panel_var                       Number of groups  =        149
+
+R-squared:                                      Obs per group:
+     Within  = 0.1720                                         min =          1
+     Between = 0.5071                                         avg =       59.4
+     Overall = 0.3600                                         max =         68
+
+                                                F(2,148)          =      57.18
+corr(u_i, Xb) = 0.4340                          Prob > F          =     0.0000
+
+                                  (Std. err. adjusted for 149 clusters in panel_var)
+------------------------------------------------------------------------------------
+                   |               Robust
+   sum_disposition | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------------+----------------------------------------------------------------
+wa_interest_rate_d |    -2.0426   .2102341    -9.72   0.000    -2.458048   -1.627152
+         wa_term_d |   .0423258   .0772317     0.55   0.584    -.1102936    .1949452
+             _cons |   24.17492   .4418203    54.72   0.000     23.30183    25.04802
+-------------------+----------------------------------------------------------------
+           sigma_u |  2.6817558
+           sigma_e |  1.1283441
+               rho |  .84959666   (fraction of variance due to u_i)
+------------------------------------------------------------------------------------
+
+. 
+end of do-file
+
+. do "C:\Users\JESUS~1.LOP\AppData\Local\Temp\STDbec_000000.tmp"
+
+. areg sum_disposition wa_interest_rate_d wa_term_d absorb(sector_code)
+variable absorb not found
+r(111);
+
+end of do-file
+
+r(111);
+

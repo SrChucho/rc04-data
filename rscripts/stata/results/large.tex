@@ -1,0 +1,44 @@
+{
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+\begin{tabular}{l*{4}{c}}
+\hline\hline
+                &\multicolumn{1}{c}{(1)}&\multicolumn{1}{c}{(2)}&\multicolumn{1}{c}{(3)}&\multicolumn{1}{c}{(4)}\\
+                &\multicolumn{1}{c}{Log Loan Amount}&\multicolumn{1}{c}{no_iv_industry_year}&\multicolumn{1}{c}{iv_model}&\multicolumn{1}{c}{iv_industry_year_log}\\
+\hline
+Interest rate   &  -0.0894\sym{***}&  -0.0931\sym{***}&    0.463\sym{*}  &                  \\
+                & (0.0227)         & (0.0226)         &  (0.252)         &                  \\
+log(Term)       &   -0.113\sym{***}&   -0.112\sym{***}&   -0.384\sym{**} &                  \\
+                & (0.0228)         & (0.0224)         &  (0.159)         &                  \\
+Inflation rate  &   0.0768\sym{***}&   0.0769\sym{***}& 0.000789         &  0.00624         \\
+                &(0.00900)         &(0.00904)         & (0.0508)         & (0.0753)         \\
+Citibanamex     &   -0.101         &  -0.0990         &   -1.056\sym{***}&   -0.114         \\
+                &  (0.122)         &  (0.121)         &  (0.396)         &  (0.202)         \\
+Santander       &   -0.436\sym{***}&   -0.435\sym{***}&   -1.369\sym{***}&   -0.444\sym{**} \\
+                &  (0.101)         &  (0.102)         &  (0.409)         &  (0.200)         \\
+HSBC            &   -0.158         &   -0.157         &   -0.985\sym{***}&   -0.102         \\
+                &  (0.229)         &  (0.227)         &  (0.194)         &  (0.297)         \\
+Inbursa         &   0.0941         &   0.0913         &  -0.0689         &   -0.136         \\
+                &  (0.167)         &  (0.166)         &  (0.177)         &  (0.229)         \\
+Scotiabank      &   -0.330\sym{***}&   -0.328\sym{***}&   -0.470\sym{***}&   -0.543\sym{***}\\
+                & (0.0927)         & (0.0921)         &  (0.125)         &  (0.199)         \\
+Banorte         &   -0.267         &   -0.267         &   -1.342\sym{**} &   0.0305         \\
+                &  (0.192)         &  (0.195)         &  (0.573)         &  (0.177)         \\
+log(Interest rate)&                  &                  &                  &    2.376         \\
+                &                  &                  &                  &  (2.417)         \\
+Term            &                  &                  &                  &   -0.386         \\
+                &                  &                  &                  &  (0.238)         \\
+Industry effects &      Yes         &      Yes         &      Yes         &      Yes         \\
+Year effects    &      Yes         &      Yes         &      Yes         &      Yes         \\
+Industry-Year effects &      Yes         &      Yes         &      Yes         &      Yes         \\
+\hline
+Observations    &     4418         &     4418         &     4418         &     4418         \\
+R-squared       &    0.226         &    0.243         &   -0.377         &   -0.390         \\
+elas_i          &   -0.759         &   -0.791         &    3.926         &                  \\
+elas_i_SE       &    0.193         &    0.192         &    2.142         &                  \\
+elas_t          &   -0.792         &   -0.792         &   -2.704         &                  \\
+elas_t_SE       &    0.161         &    0.161         &    1.117         &                  \\
+F first stage   &                  &                  &    15.94         &                  \\
+F first stage   &                  &                  &                  &7.273907626907638         \\
+\hline\hline
+\end{tabular}
+}
